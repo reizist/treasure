@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -12,6 +13,7 @@ import (
 type Options struct {
 	method    string
 	headers   string
+	data      string
 	isVerbose bool
 	isHelp    bool
 	url       string
@@ -21,6 +23,7 @@ func ParseOptions() *Options {
 	options := &Options{}
 	method := flag.String("X", "GET", "Specify request command to use")
 	headers := flag.String("H", "", "Pass custom header LINE to server (H)")
+	data := flag.String("d", "", "HTTP POST data (H)")
 	isVerbose := flag.Bool("v", false, "Make the operation more talkative")
 	isHelp := flag.Bool("h", false, "This help text")
 	flag.Usage = usage
@@ -35,6 +38,7 @@ func ParseOptions() *Options {
 	options.url = url
 	options.method = *method
 	options.headers = *headers
+	options.data = *data
 	options.isVerbose = *isVerbose
 	options.isHelp = *isHelp
 
@@ -43,7 +47,12 @@ func ParseOptions() *Options {
 
 func createRequest(options Options) *http.Request {
 
-	req, _ := http.NewRequest(options.method, options.url, nil)
+	var jsonBytes []byte
+	if options.method == "POST" || options.method == "PATCH" || options.method == "PUT" {
+		jsonBytes = ([]byte)(options.data)
+	}
+
+	req, _ := http.NewRequest(options.method, options.url, bytes.NewBuffer(jsonBytes))
 
 	if options.headers != "" {
 		headers := strings.Split(options.headers, ";")
