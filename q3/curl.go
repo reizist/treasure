@@ -46,9 +46,12 @@ func createRequest(options Options) *http.Request {
 	req, _ := http.NewRequest(options.method, options.url, nil)
 
 	if options.headers != "" {
-		headerKey := strings.Split(options.headers, ":")[0]
-		headerValue := strings.Split(options.headers, ":")[1]
-		req.Header.Add(headerKey, headerValue)
+		headers := strings.Split(options.headers, ";")
+		for _, v := range headers {
+			headerKey := strings.Split(v, ":")[0]
+			headerValue := strings.Split(v, ":")[1]
+			req.Header.Add(headerKey, headerValue)
+		}
 	}
 
 	return req
@@ -71,10 +74,17 @@ func main() {
 		defer resp.Body.Close()
 
 		if options.isVerbose {
-			for k, v := range resp.Header {
+			for k, v := range request.Header {
+				fmt.Printf("> ")
 				fmt.Println(k, ":", strings.Join(v, " "))
 			}
-			fmt.Println("")
+			fmt.Println("> ")
+
+			for k, v := range resp.Header {
+				fmt.Printf("< ")
+				fmt.Println(k, ":", strings.Join(v, " "))
+			}
+			fmt.Println("< ")
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
