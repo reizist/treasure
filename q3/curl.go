@@ -29,13 +29,16 @@ func ParseOptions() *Options {
 	flag.Usage = usage
 	flag.Parse()
 
-	if len(flag.Args()) < 1 {
+	if len(flag.Args()) < 1 && !(*isHelp) {
 		fmt.Println("try 'curl -h' for more information")
 		os.Exit(2)
 	}
 
-	url := flag.Args()[0]
-	options.url = url
+	if len(flag.Args()) > 0 {
+		url := flag.Args()[0]
+		options.url = url
+	}
+
 	options.method = *method
 	options.headers = *headers
 	options.data = *data
