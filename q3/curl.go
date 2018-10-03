@@ -57,7 +57,10 @@ func main() {
 		defer resp.Body.Close()
 
 		if options.isVerbose {
-			fmt.Printf("%q\n", resp.Header)
+			for k, v := range resp.Header {
+				fmt.Println(k, ":", strings.Join(v, " "))
+			}
+			fmt.Println("")
 		}
 
 		body, _ := ioutil.ReadAll(resp.Body)
