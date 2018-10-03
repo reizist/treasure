@@ -1,18 +1,15 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"os"
 )
 
 func main() {
-	if len(os.Args) < 2 {
-		fmt.Fprint(os.Stderr, "do nothing\n")
-		os.Exit(1)
-	}
-	url := os.Args[1]
+	flag.Parse()
+	url := flag.Args()[0]
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Println("err", err)
